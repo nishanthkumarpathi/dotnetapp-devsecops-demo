@@ -6,9 +6,6 @@ on:
       - main
   workflow_dispatch:
 
-env:
-  GITHUBRUNNERID: $GITHUB_RUN_NUMBER
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -26,11 +23,14 @@ jobs:
 
       - name: Publish the Deployment Package in output folder
         run: dotnet publish -o output
+
+      - name: Verfiy the output folder
+        run: ls -lrth output
       
       - name: Upload the Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: output-${{ env.GITHUBRUNNERID }}
+          name: output-${{github.run_number}}
           path: output/*
 
   deployment:
@@ -40,7 +40,7 @@ jobs:
       - name: Download the Artifact
         uses: actions/download-artifact@v3
         with:
-          name: output-${{ env.GITHUBRUNNERID }}
+          name: output-${{github.run_number}}
           path: output
 
       - name: Check weather all the files are availble or not
