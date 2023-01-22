@@ -3,7 +3,7 @@ name: Copy Files via SSH to Windows Server
 on:
   push:
     branches:
-      - master
+      - main
   workflow_dispatch:
 
 env:
