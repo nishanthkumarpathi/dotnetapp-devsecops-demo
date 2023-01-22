@@ -1,0 +1,92 @@
+name: SonarScan
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  sonarcloud:
+    name: SonarCloud
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  # validate-code:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout of the Code
+  #       uses: actions/checkout@v3
+
+  #     - name: Install .NET Environment
+  #       uses: actions/setup-dotnet@v3.0.3
+  #       with:
+  #         dotnet-version: '6.0.401'
+
+  #     - name: Install dependencies
+  #       run: dotnet restore
+
+  #     - name: Sonarqube Begin
+  #       run: |
+  #         dotnet tool install --global dotnet-sonarscanner
+  #         dotnet sonarscanner begin /o:someorg /k:somekey /d:sonar.login=${{ secrets.SONAR_TOKEN }} /s:$GITHUB_WORKSPACE/SonarQube.Analysis.xml
+
+
+  # build:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout of the Code
+  #       uses: actions/checkout@v3
+
+  #     - name: Install .NET Environment
+  #       uses: actions/setup-dotnet@v3.0.3
+  #       with:
+  #         dotnet-version: '6.0.401'
+
+  #     - name: Verify the .NET Installation
+  #       run: dotnet --version
+
+  #     - name: Publish the Deployment Package in output folder
+  #       run: dotnet publish -o output
+
+  #     - name: Verfiy the output folder
+  #       run: ls -lrth output
+      
+  #     - name: Upload the Artifact
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: output-${{github.run_number}}
+  #         path: output/*
+
+  # deployment:
+  #   runs-on: ubuntu-latest
+  #   needs: build
+  #   steps:
+  #     - name: Download the Artifact
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: output-${{github.run_number}}
+  #         path: output
+
+  #     - name: Check weather all the files are availble or not
+  #       run: ls -lrth output
+
+  #     - name: Copy the Public Folder to Ubuntu
+  #       uses: marcodallasanta/ssh-scp-deploy@v1.2.0
+  #       with:
+  #         local: 'output/*'
+  #         remote: 'output/'
+  #         host: ${{secrets.HOST}}
+  #         user: ${{secrets.USER}}
+  #         password: ${{secrets.PASSWORD}}
+  #         ssh_options: -o StrictHostKeyChecking=no
+  #         pre_upload: rmdir /s /q output
+  #         post_upload: iisreset /stop && xcopy /s /y output C:\inetpub\wwwroot\ && iisreset /start
