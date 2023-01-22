@@ -28,7 +28,7 @@ jobs:
         run: dotnet publish -o output
       
       - name: Upload the Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: output-${{ env.GITHUBRUNNERID }}
           path: output/*
@@ -38,7 +38,7 @@ jobs:
     needs: build
     steps:
       - name: Download the Artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: output-${{ env.GITHUBRUNNERID }}
           path: output
